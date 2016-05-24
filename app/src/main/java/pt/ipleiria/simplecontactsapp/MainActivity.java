@@ -2,6 +2,7 @@ package pt.ipleiria.simplecontactsapp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,13 +29,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        contacts = new ArrayList<String>();
+        SharedPreferences sp = getSharedPreferences("contactsApp", 0);
+        Set<String> contactsSet = sp.getStringSet("contactsKey", new HashSet<String>());
 
-        contacts.add("Inocêncio Coitadinho | 914596956");
-        contacts.add("Vénus Maria | 934524244");
-        contacts.add("Leonor Rodrigues | 964335678");
-        contacts.add("Ana Matias | 913427864");
-        contacts.add("Marta Catita | 927574545");
+        contacts = new ArrayList<String>(contactsSet);
+
+        //contacts.add("Inocêncio Coitadinho | 914596956");
+        //contacts.add("Vénus Maria | 934524244");
+        //contacts.add("Leonor Rodrigues | 964335678");
+        //contacts.add("Ana Matias | 913427864");
+        //contacts.add("Marta Catita | 927574545");
 
 
         //buscar referencia para listview
@@ -74,6 +81,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Toast.makeText(MainActivity.this, "A guardar dados.", Toast.LENGTH_SHORT).show();
+
+                //guardar os contactos para a shared preferences
+        SharedPreferences sp = getSharedPreferences("contactsApp", 0);
+        SharedPreferences.Editor editor =sp.edit();
+        HashSet contactsSet = new HashSet(contacts);
+        editor.putStringSet("contactsKey", contactsSet);
+        editor.commit();
 
     }
 
